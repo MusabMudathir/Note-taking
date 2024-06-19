@@ -14,13 +14,14 @@ import {
   Textarea,
   Input,
 } from "@chakra-ui/react";
-import { useDisclosure } from "@chakra-ui/react";
+import { useDisclosure, useToast } from "@chakra-ui/react";
 
 export default function Home() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [notes, setNotes] = useState([]);
+  const toast = useToast();
   const getNotes = async () => {
     try {
       const notesGetter = await axios.get("http://localhost:5005/api/notes");
@@ -43,7 +44,17 @@ export default function Home() {
           content,
         }
       );
-      window.location.reload();
+      toast({
+        title: "Note  Created.",
+        description: "Your note has been updated successfully.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      onClose();
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.log(error);
     }
@@ -56,7 +67,7 @@ export default function Home() {
           New Note
         </Button>
       </div>
-      {notes ? (
+      {notes.length > 0 ? (
         notes?.map((note) => (
           <MainCard
             key={note._id}

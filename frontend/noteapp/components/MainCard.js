@@ -13,7 +13,7 @@ import {
   Textarea,
   Input,
 } from "@chakra-ui/react";
-import { useDisclosure } from "@chakra-ui/react";
+import { useDisclosure, useToast } from "@chakra-ui/react";
 import axios from "axios";
 
 function MainCard({ title, content, id }) {
@@ -22,13 +22,23 @@ function MainCard({ title, content, id }) {
     title: title,
     content: content,
   });
+  const toast = useToast();
 
   const deleteNote = async () => {
     try {
       const response = await axios.delete(
         `http://localhost:5005/api/notes/delete/${id}`
       );
-      window.location.reload();
+      toast({
+        title: "Note  Deleted.",
+        description: "Your note has been deleted successfully.",
+        status: "info",
+        duration: 3000,
+        isClosable: true,
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.log(error);
     }
@@ -40,7 +50,17 @@ function MainCard({ title, content, id }) {
         `http://localhost:5005/api/notes/update/${id}`,
         modalData
       );
-      window.location.reload();
+      toast({
+        title: "Note  Updated.",
+        description: "Your note has been updated successfully.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      onClose();
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.log(error);
     }
