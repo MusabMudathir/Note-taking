@@ -13,7 +13,9 @@ import {
   ModalCloseButton,
   Textarea,
   Input,
+  Heading,
 } from "@chakra-ui/react";
+import { Card, CardHeader, CardBody, CardFooter } from "@chakra-ui/react";
 import { useDisclosure, useToast } from "@chakra-ui/react";
 
 export default function Home() {
@@ -21,7 +23,18 @@ export default function Home() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [notes, setNotes] = useState([]);
+  const [quoteState, setQuote] = useState("");
   const toast = useToast();
+
+  const quote = async () => {
+    try {
+      const response = await axios.get("https://api.quotable.io/random");
+      setQuote(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const getNotes = async () => {
     try {
       const notesGetter = await axios.get("http://localhost:5005/api/notes");
@@ -33,6 +46,7 @@ export default function Home() {
 
   useEffect(() => {
     getNotes();
+    quote();
   }, []);
 
   const createNote = async () => {
@@ -67,6 +81,15 @@ export default function Home() {
           New Note
         </Button>
       </div>
+      <Card width={"45%"} mt="10px" key={"filled"} variant="filled">
+        <CardHeader>
+          <Heading size="md">"{quoteState?.content}"</Heading>
+        </CardHeader>
+
+        <CardBody>
+          <Text as="i">"{quoteState?.author}"</Text>
+        </CardBody>
+      </Card>
       {notes.length > 0 ? (
         notes?.map((note) => (
           <MainCard
